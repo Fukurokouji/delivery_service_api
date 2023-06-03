@@ -27,6 +27,7 @@ jobs:
         pip install -r requirements.txt
     - name: setup db
       run: |
+          cp docker.env_example .env
           make db
           make apply_migrations  
     - name: Run tests
