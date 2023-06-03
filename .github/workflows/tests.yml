@@ -27,7 +27,7 @@ jobs:
         pip install -r requirements.txt
     - name: run tests
       run: |
-          docker-compose up db migrations   
+          docker-compose up -d --build db migrations   
           make tests
       env:
         DATABASE_HOST: localhost
