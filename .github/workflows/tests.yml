@@ -28,6 +28,8 @@ jobs:
     - name: setup db
       run: |
           make db
+    - name: apply migrations
+      run: |
           make apply_migrations  
       env:
         DATABASE_HOST: localhost
