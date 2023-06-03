@@ -28,7 +28,7 @@ jobs:
     - name: run tests
       run: |
           docker-compose up -d --build db migrations   
-          make tests
+          pytest
       env:
         DATABASE_HOST: localhost
         DATABASE_USERNAME: postgres
