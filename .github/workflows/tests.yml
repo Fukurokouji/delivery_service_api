@@ -27,15 +27,12 @@ jobs:
         pip install -r requirements.txt
     - name: setup db
       run: |
-          make db
-    - name: apply migrations
+          docker-compose up db migrations   
+    - name: Run tests
       run: |
-          make apply_migrations  
+          make tests
       env:
         DATABASE_HOST: localhost
         DATABASE_USERNAME: postgres
         DATABASE_PASSWORD: password
         DATABASE_DB_NAME: postgres
-    - name: Run tests
-      run: |
-          make tests
