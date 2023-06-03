@@ -1,36 +1,59 @@
-version: '3.9'
+version: "3.9"
+
 services:
-  application:
-    build: .
-    restart: always
-    environment:
-      POSTGRES_DSN: postgresql://postgres:password@db/postgres
-      POSTGRES_SERVER: db
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    depends_on:
-      - db
+  app:
+    container_name: app
+    build:
+      context: .
+      target: main_app
     ports:
-      - "8080:8080"
+      - 8080:8080
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      migrations:
+        condition: service_started
+    links:
+      - db:db
     networks:
-      - enrollment
+      - project_network
+
+  migrations:
+    restart: "no"
+    container_name: migrations
+    build:
+      context: .
+      target: apply_migrations
+    depends_on:
+      db:
+        condition: service_healthy
+    links:
+      - db:db
+    networks:
+      - project_network
 
   db:
+    container_name: db
     image: postgres:15.2-alpine
-    environment:
-      - POSTGRES_PASSWORD=password
-      - POSGRES_USER=postgres
-      - POSTGRES_DB=postgres
-    expose:
-      - "5432"
-    ports:
-      - 5432:5432
     restart: always
+    
+    environment:
+      POSGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+      POSGRES_PORT: 5432
+    ports:
+      -  5432:5432
+
     networks:
-      - enrollment
+      - project_network
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres -d postgres'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 networks:
-  enrollment:
-    driver: bridge
+      project_network:
+          driver: bridge
