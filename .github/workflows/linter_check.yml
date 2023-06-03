@@ -1,3 +1,4 @@
+name: run linter
 on:
   push:
     branches: [ "**" ]
